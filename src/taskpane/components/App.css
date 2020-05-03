@@ -21,7 +21,7 @@
 
 /* -------------------------------- */
 
-.d-container {
+.app-container {
   display: flex;
   width: 100vw;
   height: 100vh;
@@ -31,15 +31,12 @@
   bottom: 0;
 }
 
-.d-header {
-  /* background-color: coral; */
-  /* height: 100px; */
+.app-header {
+  background-color: coral;
 }
 
-.d-content {
-  /* background-color: brown; */
+.app-content {
   flex: 1;
   position: relative;
-
   overflow-y: auto;
 }

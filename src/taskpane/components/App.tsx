@@ -344,15 +344,15 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     return (
-      <div className="d-container">
+      <div className="app-container">
         <InfoPane></InfoPane>
-        <div className="d-header">
+        <div className="app-header">
           {isShowIntro === true ? <FirstRun></FirstRun> : ""}
           <WdCommandBar refreshAction={this.process}></WdCommandBar>
           <Graph></Graph>
           <Diagnosis></Diagnosis>
         </div>
-        <div className="d-content">
+        <div className="app-content">
           {chunkDetailsMO.isShow === false ? <ChunkList></ChunkList> : <ChunkDetails></ChunkDetails>}
         </div>
       </div>
@@ -361,8 +361,6 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { isShowIntro } = this.props;
-    // return <div>{isShowIntro === true ? this.renderFirstRun() : this.renderAppLayout()}</div>;
-
     return <div>{isShowIntro === true ? this.renderFirstRun() : this.renderAppLayout()}</div>;
 
     // return this.renderAppLayout();
