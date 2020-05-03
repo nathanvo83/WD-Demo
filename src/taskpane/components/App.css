@@ -1,0 +1,45 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.main {
+  flex: 1;
+  position: relative;
+}
+
+.header,
+.footer {
+  background: black;
+  color: white;
+  padding: 10px;
+}
+
+/* -------------------------------- */
+
+.d-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.d-header {
+  /* background-color: coral; */
+  /* height: 100px; */
+}
+
+.d-content {
+  /* background-color: brown; */
+  flex: 1;
+  position: relative;
+
+  overflow-y: auto;
+}
