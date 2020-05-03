@@ -19,77 +19,78 @@ export interface AppState {
   //
 }
 
-class InfoPane extends React.Component<any, any> {
+class InfoPane extends React.Component<AppProps, AppState> {
   constructor(props, context) {
     super(props, context);
     this.state = {};
   }
 
-  private onRenderFooterContent = () => {
-    return (
-      <div>
-        <p className="build-number ms-fontWeight-light ms-font-s">Build {Config.base.buildNumber}</p>
-      </div>
-    );
-  };
-
   render() {
-    // const { showFirstRun } = this.props;
     const { isShowInfoPane, setHideInfoPane, setShowIntro } = this.props;
-    const panel = (
+
+    const onRenderFooterContent = () => {
+      return (
+        <div className="p-footer">
+          <p className="build-number ms-fontWeight-light ms-font-s">Build {Config.base.buildNumber}</p>
+        </div>
+      );
+    };
+
+    const onRenderHeaderContent = () => {
+      return (
+        <div className="p-header">
+          <div className={"info-pane-container"}>
+            <div className={"info-pane-top"}>
+              <div className={"info-pane-logo"}>
+                <img src={"assets/wd-logo-96.png"} />
+              </div>
+              <h1 className={"wd-themed-header"}>The Writer’s Diet</h1>
+            </div>
+            <div className={"info-pane-rest"}>
+              <Link
+                className="p-link"
+                onClick={() => {
+                  setShowIntro();
+                  setHideInfoPane();
+                }}
+              >
+                Show Intro
+              </Link>
+              <br />
+              <Link
+                className="p-link"
+                onClick={() => {
+                  window.open("http://writersdiet.com");
+                }}
+              >
+                Website <Icon iconName={"NavigateExternalInline"} />{" "}
+              </Link>
+              <Link
+                className="p-link"
+                onClick={() => {
+                  window.open("http://writersdiet.com/privacy");
+                }}
+              >
+                Privacy Policy <Icon iconName={"NavigateExternalInline"} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    return (
       <Panel
-        isOpen={isShowInfoPane}
-        // isOpen={this.props.isOpen}
-        // isFooterAtBottom={true}
         type={PanelType.smallFixedNear}
-        hasCloseButton={true}
+        onRenderHeader={onRenderHeaderContent}
+        onRenderFooterContent={onRenderFooterContent}
+        isOpen={isShowInfoPane}
+        isFooterAtBottom={true}
         onDismiss={() => {
           setHideInfoPane();
         }}
-        onRenderFooterContent={this.onRenderFooterContent}
-        // isLightDismiss={true}
-        onLightDismissClick={() => {
-          // this.props.close();
-          setHideInfoPane();
-        }}
-      >
-        <div className={"info-pane-container"}>
-          <div className={"info-pane-top"}>
-            <div className={"info-pane-logo"}>
-              <img src={"assets/wd-logo-96.png"} />
-            </div>
-            <h1 className={"wd-themed-header"}>The Writer’s Diet</h1>
-          </div>
-          <div className={"info-pane-rest"}>
-            {/* <Link onClick={showFirstRun}>Show Intro</Link> */}
-            <Link
-              onClick={() => {
-                setShowIntro();
-              }}
-            >
-              Show Intro
-            </Link>
-            <br />
-            <Link
-              onClick={() => {
-                window.open("http://writersdiet.com");
-              }}
-            >
-              Website <Icon iconName={"NavigateExternalInline"} />{" "}
-            </Link>
-            <Link
-              onClick={() => {
-                window.open("http://writersdiet.com/privacy");
-              }}
-            >
-              Privacy Policy <Icon iconName={"NavigateExternalInline"} />
-            </Link>
-          </div>
-        </div>
-      </Panel>
+      ></Panel>
     );
-
-    return panel;
   }
 }
 
