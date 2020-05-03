@@ -1,12 +1,22 @@
 import * as React from "react";
-import { DefaultButton, PrimaryButton, ButtonType } from "office-ui-fabric-react";
-import Slider from "react-slick";
+import { connect } from "react-redux";
+import { DefaultButton, PrimaryButton } from "office-ui-fabric-react";
 import "./FirstRun.css";
-import "../../../../node_modules/slick-carousel/slick/slick.css";
-import "../../../../node_modules/slick-carousel/slick/slick-theme.css";
-
 import Lottie from "react-lottie";
 import * as slideOneData from "./slideOne.json";
+import { types } from "../../constants/types";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+
+export interface AppProps {
+  //
+  setHideIntro;
+}
+
+export interface AppState {
+  //
+  currentSlide: number;
+}
 
 class Slide extends React.Component<any, any> {
   render() {
@@ -42,41 +52,42 @@ class Slide extends React.Component<any, any> {
   }
 }
 
-export default class FirstRun extends React.Component<any, any> {
+class FirstRun extends React.Component<AppProps, AppState> {
   constructor(props) {
     super(props);
     this.state = { currentSlide: 0 };
   }
 
-  private slider;
-
   render() {
-    const sliderSettings = {
-      dots: true,
-      infinite: true,
-      speed: 500,
-      fade: true,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      swipeToSlide: false,
-      afterChange: currentSlide => {
-        this.setState({ currentSlide });
+    const { setHideIntro } = this.props;
+    const responsive = {
+      superLargeDesktop: {
+        // the naming can be any, depends on you.
+        breakpoint: { max: 4000, min: 3000 },
+        items: 1
+      },
+      desktop: {
+        breakpoint: { max: 3000, min: 1024 },
+        items: 1
+      },
+      tablet: {
+        breakpoint: { max: 1024, min: 464 },
+        items: 1
+      },
+      mobile: {
+        breakpoint: { max: 464, min: 0 },
+        items: 1
       }
     };
-    const { currentSlide } = this.state;
-
-    const lastSlide = 2;
-
-    // const { onDismiss } = this.props;
-
     return (
-      <div className={"first-run-container"}>
-        123
-        {currentSlide !== lastSlide && (
-          <div className={"first-run-skip-link"}>
+      <div>
+        <div className="first-run-container">
+          <div className="first-run-skip-link">
             <DefaultButton
               text="Skip"
-              // onClick={onDismiss}
+              onClick={() => {
+                setHideIntro();
+              }}
               styles={{
                 flexContainer: {
                   flexDirection: "row-reverse"
@@ -85,37 +96,9 @@ export default class FirstRun extends React.Component<any, any> {
               iconProps={{ iconName: "ChevronRight" }}
             />
           </div>
-        )}
-        {currentSlide > 0 && (
-          <div className={"first-run-button-previous"}>
-            <DefaultButton
-              buttonType={ButtonType.icon}
-              onClick={() => {
-                this.slider.slickPrev();
-              }}
-              iconProps={{ iconName: "ChevronLeft" }}
-            />
-          </div>
-        )}
-        {currentSlide < lastSlide && (
-          <div className={"first-run-button-next"}>
-            <DefaultButton
-              buttonType={ButtonType.icon}
-              onClick={() => {
-                this.slider.slickNext();
-              }}
-              iconProps={{ iconName: "ChevronRight" }}
-            />
-          </div>
-        )}
-        <Slider
-          {...sliderSettings}
-          ref={c => {
-            this.slider = c;
-          }}
-        >
+        </div>
+        <Carousel showDots={true} responsive={responsive}>
           <Slide animationData={slideOneData}>
-            {/* <h3 className={'ms-font-xl'}>Lorem Ipsum</h3> */}
             <p className={"ms-fontWeight-light"}>
               The WritersDiet Test is a diagnostic tool designed to give you feedback on whether your writing is “flabby
               or fit.”
@@ -137,41 +120,28 @@ export default class FirstRun extends React.Component<any, any> {
             </p>
             <div className={"first-run-get-started-container"}>
               {/* <PrimaryButton text="Start Writing" onClick={onDismiss} /> */}
-              <PrimaryButton text="Start Writing" />
+              <PrimaryButton
+                text="Start Writing"
+                onClick={() => {
+                  setHideIntro();
+                }}
+              />
             </div>
           </Slide>
-        </Slider>
+        </Carousel>
       </div>
     );
-
-    /*3
-        const content = {
-            0: <div>Page 1</div>,
-            1: <div>Page 2</div>,
-            2: <div>Page 3</div>
-        }
-        const { pageIndex } = this.state
-
-        const carouselPicker = (
-        <div className={'first-run-carousel-picker'}>
-            <Link onClick={this.setPageIndex.apply(this,0)}>1</Link>
-            <Link onClick={this.setPageIndex.apply(this,1)}>2</Link>
-            <Link onClick={this.setPageIndex.apply(this,2)}>3</Link>
-        </div>)
-
-        const container = (
-        <div className={'first-run-container'}>
-            <div className={'first-run-carousel'}>
-                { content[pageIndex] }
-                { carouselPicker }
-            </div>
-        </div>)
-        
-        return container
-        */
   }
-
-  // render() {
-  //   return <div>123</div>;
-  // }
 }
+
+const mapDispatchToProps = dispatch => ({
+  setHideIntro: () => {
+    dispatch({ type: types.HIDE_INTRO });
+  }
+});
+
+// const mapStateToProps = ({ isShowInfoPane }) => ({
+//   isShowInfoPane
+// });
+
+export default connect(null, mapDispatchToProps)(FirstRun);
