@@ -110,5 +110,92 @@ export const Config = {
       ),
       scoreCutoffs: [25, 35, 45, 55]
     }
+  },
+
+  ratingLabelPresets: [
+    {
+      key: "diet-fitness",
+      themeTitle: "Diet and Fitness",
+      themeQuestion: "Flabby or Fit?",
+      ratings: {
+        0: "Lean",
+        1: "Fit & Trim",
+        2: "Needs Toning",
+        3: "Flabby",
+        4: "Heart Attack!"
+      }
+    },
+    {
+      key: "clear-skies",
+      themeTitle: "Clear Skies",
+      themeQuestion: "Cloudy or Clear?",
+      ratings: {
+        0: "Bright",
+        1: "Clear Skies",
+        2: "Misty",
+        3: "Cloudy",
+        4: "Foghorn!"
+      }
+    },
+    {
+      key: "solid-ground",
+      themeTitle: "Solid Ground",
+      themeQuestion: "Swampy or Solid?",
+      ratings: {
+        0: "Firm",
+        1: "Solid Ground",
+        2: "Boggy",
+        3: "Swampy",
+        4: "Quicksand!"
+      }
+    },
+    {
+      key: "clean-house",
+      themeTitle: "Clean House",
+      themeQuestion: "Cluttered or Clean?",
+      ratings: {
+        0: "Tidy",
+        1: "Clean House",
+        2: "Messy",
+        3: "Cluttered",
+        4: "KonMari!"
+      }
+    },
+    {
+      key: "sunny-weather",
+      themeTitle: "Sunny Weather",
+      themeQuestion: "Stormy or Sunny?",
+      ratings: {
+        0: "🌈",
+        1: "☀️",
+        2: "⛅️",
+        3: "🌧",
+        4: "⛈"
+      }
+    },
+    {
+      key: "custom",
+      themeTitle: "Choose your own theme...",
+      themeQuestion: "",
+      ratings: {
+        0: "Lean",
+        1: "Fit & Trim",
+        2: "Needs Toning",
+        3: "Flabby",
+        4: "Heart Attack!"
+      }
+    }
+  ],
+
+  exclusions: {
+    parens: true,
+    singleQuotes: true,
+    doubleQuotes: true,
+    headings: true,
+    indentedParagraphs: true,
+    listItems: true,
+    tables: true,
+    wordCountLessThan: 25,
+    customExclusion: []
   }
 };
