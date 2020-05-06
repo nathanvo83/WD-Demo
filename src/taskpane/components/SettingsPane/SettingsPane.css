@@ -1,0 +1,23 @@
+.s-header {
+  font-size: x-large;
+  font-weight: lighter;
+  width: 100%;
+  text-align: left;
+  margin-left: 1em;
+  /* float: left; */
+}
+
+.s-body {
+  margin-top: 1.5em;
+  margin-left: 1em;
+  margin-right: 1.5em;
+}
+
+.s-footer {
+  /* background-color: peru; */
+  /*  */
+}
+
+.currentscores {
+  font-weight: bold;
+}
