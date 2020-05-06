@@ -39,34 +39,61 @@ class ChunkDetails extends React.Component<AppProps, AppState> {
   private changeColor(content: string) {
     let analysis: Analysis = new Analysis();
     let listItems: JSX.Element[] = [];
+    let i: number = 0;
+
     content.split(" ").forEach(word => {
       let term = word.toLowerCase();
+      i++;
 
       switch (analysis.identifyWord(term)) {
         case 0:
-          listItems.push(<span className="verb">{word}</span>);
-          listItems.push(<span> </span>);
+          listItems.push(
+            <span key={"v" + i} className="verb">
+              {word}
+            </span>
+          );
+          listItems.push(<span key={"e" + i}> </span>);
           break;
         case 1:
-          listItems.push(<span className="noun">{word}</span>);
-          listItems.push(<span> </span>);
+          listItems.push(
+            <span key={"n" + i} className="noun">
+              {word}
+            </span>
+          );
+          listItems.push(<span key={"e" + i}> </span>);
           break;
         case 2:
-          listItems.push(<span className="preposition">{word}</span>);
-          listItems.push(<span> </span>);
+          listItems.push(
+            <span key={"p" + i} className="preposition">
+              {word}
+            </span>
+          );
+          listItems.push(<span key={"e" + i}> </span>);
           break;
         case 3:
-          listItems.push(<span className="ad_">{word}</span>);
-          listItems.push(<span> </span>);
+          listItems.push(
+            <span key={"a" + i} className="ad_">
+              {word}
+            </span>
+          );
+          listItems.push(<span key={"e" + i}> </span>);
           break;
         case 4:
-          listItems.push(<span className="waste">{word}</span>);
-          listItems.push(<span> </span>);
+          listItems.push(
+            <span key={"w" + i} className="waste">
+              {word}
+            </span>
+          );
+          listItems.push(<span key={"e" + i}> </span>);
           break;
 
         default:
-          listItems.push(<span className="normal">{word}</span>);
-          listItems.push(<span> </span>);
+          listItems.push(
+            <span key={"n" + i} className="normal">
+              {word}
+            </span>
+          );
+          listItems.push(<span key={"e" + i}> </span>);
           break;
       }
     });
@@ -84,7 +111,7 @@ class ChunkDetails extends React.Component<AppProps, AppState> {
         // listItems.push(<div>{content.substring(start, i)}</div>);
         let x = content.substring(start, i);
         let y = this.changeColor(x);
-        listItems.push(<div>{y}</div>);
+        listItems.push(<div key={start}>{y}</div>);
         start = i + 1;
 
         console.log("--->renderContent:", listItems);
@@ -93,9 +120,10 @@ class ChunkDetails extends React.Component<AppProps, AppState> {
 
     if (start < content.length - 1) {
       // listItems.push(<div>{content.substring(start + 1)}</div>);
-      let x = content.substring(start + 1);
+      start++;
+      let x = content.substring(start);
       let y = this.changeColor(x);
-      listItems.push(<div>{y}</div>);
+      listItems.push(<div key={start}>{y}</div>);
     }
 
     return listItems;
