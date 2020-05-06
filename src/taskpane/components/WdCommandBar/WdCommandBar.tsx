@@ -11,6 +11,7 @@ export interface AppProps {
   //
   refreshAction;
   setShowInfoPane;
+  setShowSettingsPane;
 }
 
 export interface AppState {
@@ -23,7 +24,8 @@ class WdCommandBar extends React.Component<AppProps, AppState> {
       refreshAction,
       // openSettingsPane,
       // activeMetric,
-      setShowInfoPane
+      setShowInfoPane,
+      setShowSettingsPane
       // setCurrentChunkRelative,
       // isCurrentChunkFirst,
       // isCurrentChunkLast,
@@ -86,10 +88,10 @@ class WdCommandBar extends React.Component<AppProps, AppState> {
             },
             // disabled: !ready,
             /*text: 'Settings',*/
-            ariaLabel: "Settings"
-            // onClick: () => {
-            //   openSettingsPane();
-            // }
+            ariaLabel: "Settings",
+            onClick: () => {
+              setShowSettingsPane();
+            }
           }
         ]}
       />
@@ -100,11 +102,16 @@ class WdCommandBar extends React.Component<AppProps, AppState> {
 const mapDispatchToProps = dispatch => ({
   setShowInfoPane: () => {
     dispatch({ type: types.SHOW_INFO_PANE });
+  },
+  setShowSettingsPane: () => {
+    console.log(types.SHOW_SETTINGS_PANE);
+    dispatch({ type: types.SHOW_SETTINGS_PANE });
   }
 });
 
-const mapStateToProps = ({ isShowInfoPane }) => ({
-  isShowInfoPane
+const mapStateToProps = ({ isShowInfoPane, isShowSettingsPane }) => ({
+  isShowInfoPane,
+  isShowSettingsPane
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WdCommandBar);
