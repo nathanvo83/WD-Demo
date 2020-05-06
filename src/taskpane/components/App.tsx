@@ -17,6 +17,8 @@ import WdCommandBar from "./WdCommandBar/WdCommandBar";
 import InfoPane from "./InfoPane/InfoPane";
 import FirstRun from "./FirstRun/FirstRun";
 import Diagnosis from "./Diagnosis/Diagnosis";
+import SettingsPane from "./SettingsPane/SettingsPane";
+import { ExclusionsMO } from "../models/ExclusionsMO";
 
 // import { Checkbox } from "office-ui-fabric-react";
 // import { ScrollablePane, ScrollbarVisibility } from "office-ui-fabric-react";
@@ -36,9 +38,12 @@ export interface AppProps {
   wordTypeScoreMO: WordTypeScoreMO;
   setWordTypeScoreMO;
 
-  isShowFirstRun: boolean;
+  exclusionsMO: ExclusionsMO;
+  setExclusionsMO;
+
   isShowInfoPane: boolean;
   isShowIntro: boolean;
+  isShowSettingsPane: boolean;
 }
 
 export interface AppState {
@@ -55,10 +60,15 @@ class App extends React.Component<AppProps, AppState> {
 
   constructor(props, context) {
     super(props, context);
+    console.log("App--------load");
+
     this.analysis = new Analysis();
     this.chunkDetailsContentChange = false;
     // this.isProcessing = false;
     this.isNextProcessing = false;
+
+    let exclusionsMO = new ExclusionsMO(true, false, true, true, true, true, true, 100, []);
+    this.props.setExclusionsMO(exclusionsMO);
   }
 
   componentDidMount() {
@@ -298,9 +308,7 @@ class App extends React.Component<AppProps, AppState> {
     // function _onChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean) {
     //   console.log(`The option has been changed to ${isChecked}. ${ev}`);
     // }
-    const { title, chunkDetailsMO, isOfficeInitialized, isShowIntro } = this.props;
-    const { isShowFirstRun, isShowInfoPane } = this.props;
-    console.log("--->>> isShowFirstRun: ", isShowFirstRun);
+    const { title, chunkDetailsMO, isOfficeInitialized, isShowIntro, isShowInfoPane } = this.props;
     console.log("--->>> isShowInfoPane: ", isShowInfoPane);
     console.log("--->>> isShowIntro: ", isShowIntro);
 
@@ -334,7 +342,7 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   renderAppLayout() {
-    const { chunkDetailsMO, isShowIntro, isOfficeInitialized, title } = this.props;
+    const { chunkDetailsMO, isOfficeInitialized, title } = this.props;
     // const { isShowFirstRun, isShowInfoPane } = this.props;
 
     if (!isOfficeInitialized) {
@@ -346,8 +354,8 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <div className="app-container">
         <InfoPane></InfoPane>
+        <SettingsPane></SettingsPane>
         <div className="app-header">
-          {isShowIntro === true ? <FirstRun></FirstRun> : ""}
           <WdCommandBar refreshAction={this.process}></WdCommandBar>
           <Graph></Graph>
           <Diagnosis></Diagnosis>
@@ -363,7 +371,7 @@ class App extends React.Component<AppProps, AppState> {
     const { isShowIntro } = this.props;
     return <div>{isShowIntro === true ? this.renderFirstRun() : this.renderAppLayout()}</div>;
 
-    // return this.renderAppLayout();
+    return this.renderAppLayout();
     // return <div>{isShowFirstRun === false ? this.renderFirstRun() : this.renderAppLayout()}</div>;
     // return <div>{isShowFirstRun === false ? this.renderAppLayout() : this.renderFirstRun()}</div>;
 
@@ -391,6 +399,12 @@ const mapDispatchToProps = dispatch => ({
       type: types.SET_SCORE,
       wordTypeScoreMO: wordTypeScoreMO
     });
+  },
+  setExclusionsMO: exclusionsMO => {
+    dispatch({
+      type: types.SET_EXCLUSIONS,
+      exclusionsMO: exclusionsMO
+    });
   }
 });
 
@@ -398,16 +412,18 @@ const mapStateToProps = ({
   chunkDetailsMO,
   chunkListMO,
   wordTypeScoreMO,
-  isShowFirstRun,
+  exclusionsMO,
   isShowInfoPane,
-  isShowIntro
+  isShowIntro,
+  isShowSettingsPane
 }) => ({
   chunkDetailsMO,
   chunkListMO,
   wordTypeScoreMO,
-  isShowFirstRun,
+  exclusionsMO,
   isShowInfoPane,
-  isShowIntro
+  isShowIntro,
+  isShowSettingsPane
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
