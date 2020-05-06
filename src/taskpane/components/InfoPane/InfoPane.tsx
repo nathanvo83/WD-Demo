@@ -30,15 +30,15 @@ class InfoPane extends React.Component<AppProps, AppState> {
 
     const onRenderFooterContent = () => {
       return (
-        <div className="p-footer">
+        <div>
           <p className="build-number ms-fontWeight-light ms-font-s">Build {Config.base.buildNumber}</p>
         </div>
       );
     };
 
-    const onRenderHeaderContent = () => {
+    const onRenderBodyContent = () => {
       return (
-        <div className="p-header">
+        <div>
           <div className={"info-pane-container"}>
             <div className={"info-pane-top"}>
               <div className={"info-pane-logo"}>
@@ -48,7 +48,7 @@ class InfoPane extends React.Component<AppProps, AppState> {
             </div>
             <div className={"info-pane-rest"}>
               <Link
-                className="p-link"
+                className="i-link"
                 onClick={() => {
                   setShowIntro();
                   setHideInfoPane();
@@ -58,7 +58,7 @@ class InfoPane extends React.Component<AppProps, AppState> {
               </Link>
               <br />
               <Link
-                className="p-link"
+                className="i-link"
                 onClick={() => {
                   window.open("http://writersdiet.com");
                 }}
@@ -66,7 +66,7 @@ class InfoPane extends React.Component<AppProps, AppState> {
                 Website <Icon iconName={"NavigateExternalInline"} />{" "}
               </Link>
               <Link
-                className="p-link"
+                className="i-link"
                 onClick={() => {
                   window.open("http://writersdiet.com/privacy");
                 }}
@@ -82,7 +82,8 @@ class InfoPane extends React.Component<AppProps, AppState> {
     return (
       <Panel
         type={PanelType.smallFixedNear}
-        onRenderHeader={onRenderHeaderContent}
+        // onRenderHeader={onRenderHeaderContent}
+        onRenderBody={onRenderBodyContent}
         onRenderFooterContent={onRenderFooterContent}
         isOpen={isShowInfoPane}
         isFooterAtBottom={true}
