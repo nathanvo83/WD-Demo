@@ -197,5 +197,7 @@ export const Config = {
     tables: true,
     wordCountLessThan: 25,
     customExclusion: []
-  }
+  },
+
+  themeDefault: "diet-fitness"
 };
