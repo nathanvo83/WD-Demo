@@ -17,8 +17,10 @@ import {
   SpinButton
 } from "office-ui-fabric-react";
 import { types } from "../../constants/types";
-import { Config } from "../../constants/config";
 import { ExclusionsMO } from "../../models/ExclusionsMO";
+import { ThemeMO } from "../../models/ThemeMO";
+import { ConfigManager } from "../../Utils/ConfigManager";
+import { LocalStorageManager } from "../../Utils/LocalStorageManager";
 
 interface AppProps {
   //
@@ -27,20 +29,30 @@ interface AppProps {
 
   setExclusionsMO;
   exclusionsMO: ExclusionsMO;
+
+  setThemeMO;
+  themeMO: ThemeMO;
 }
 
 interface AppState {
   //
   isShowCustomTheme: boolean;
   unsaveExclusionsMO: ExclusionsMO;
+  unsaveThemeMO: ThemeMO;
 }
 
 class SettingsPane extends React.Component<AppProps, AppState> {
+  CUSTOM_KEY = "custom";
+
   constructor(props, context) {
     super(props, context);
 
     // init data
-    this.state = { isShowCustomTheme: false, unsaveExclusionsMO: this.props.exclusionsMO };
+    this.state = {
+      isShowCustomTheme: this.props.themeMO.key === this.CUSTOM_KEY,
+      unsaveExclusionsMO: this.props.exclusionsMO,
+      unsaveThemeMO: this.props.themeMO
+    };
   }
 
   private getUnsaveExclusionsValue = name => {
@@ -48,7 +60,7 @@ class SettingsPane extends React.Component<AppProps, AppState> {
     return unsaveExclusionsMO[name];
   };
 
-  private setUnsaveExclusionsValue(name, newValue) {
+  private setUnsaveExclusionsValue = (name, newValue) => {
     const { unsaveExclusionsMO } = this.state;
     var settingEntry = {};
 
@@ -64,16 +76,40 @@ class SettingsPane extends React.Component<AppProps, AppState> {
       unsaveExclusionsMO: updatedSettings
     });
 
-    console.log("=======> setUnsaveExclusionsValue", this.state.unsaveExclusionsMO);
-  }
+    // console.log("=======> setUnsaveExclusionsValue", this.state.unsaveExclusionsMO);
+  };
 
-  private renderCheckbox = (name, label) => {
+  private getUnsaveThemeValue = name => {
+    const { unsaveThemeMO } = this.state;
+    return unsaveThemeMO[name];
+  };
+
+  private setUnsaveThemeValue = (name, newValue) => {
+    const { unsaveThemeMO } = this.state;
+
+    var settingEntry = {};
+
+    settingEntry[name] = newValue;
+
+    const updatedSettings = {
+      ...unsaveThemeMO,
+      ...settingEntry
+    };
+
+    this.setState({
+      ...this.state,
+      unsaveThemeMO: updatedSettings
+    });
+
+    // console.log("=======> setUnsaveThemeValue", this.state.unsaveThemeMO, this.props.themeMO);
+  };
+
+  private renderExclusionsCheckbox = (name, label) => {
     const settingValue = this.getUnsaveExclusionsValue(name);
     return (
       <Checkbox
         label={label}
         onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
-          console.log(ev.target, "---", ev.target.value, "===");
           this.setUnsaveExclusionsValue(name, ev.target.checked);
         }}
         checked={settingValue}
@@ -82,12 +118,19 @@ class SettingsPane extends React.Component<AppProps, AppState> {
   };
 
   renderThemeTab = () => {
-    const ratingLabelPresets = Config.ratingLabelPresets;
+    const ratingLabelPresets = ConfigManager.getRatingLabelPresets();
 
     const _onChange = (ev, option) => {
-      console.log(ev, option, option.key);
+      console.log(ev);
+      // console.log("++++++++++RatingLabel", getRatingLabelPresetsByKey(option.key));
 
-      if (option.key === "custom") {
+      let _themeMO = ConfigManager.getThemeByKey(option.key);
+      this.setState({
+        ...this.state,
+        unsaveThemeMO: _themeMO
+      });
+
+      if (option.key === this.CUSTOM_KEY) {
         this.setState({ isShowCustomTheme: true });
       } else {
         this.setState({ isShowCustomTheme: false });
@@ -95,13 +138,56 @@ class SettingsPane extends React.Component<AppProps, AppState> {
     };
 
     const onRenderCustomTheme = () => {
+      const settingValue = this.getUnsaveThemeValue("ratings");
+
+      const ratingHandler = (ev: React.ChangeEvent<HTMLInputElement>, pos) => {
+        let newValue = [...settingValue];
+        newValue[pos] = ev.target.value;
+        this.setUnsaveThemeValue("ratings", newValue);
+      };
+
       return (
         <div>
-          <TextField className="ms-fontWeight-light theme-label-caption" label="1 (Best)" />
-          <TextField className="ms-fontWeight-light theme-label-caption" label="2" />
-          <TextField className="ms-fontWeight-light theme-label-caption" label="3" />
-          <TextField className="ms-fontWeight-light theme-label-caption" label="4" />
-          <TextField className="ms-fontWeight-light theme-label-caption" label="5 (Worst)" />
+          <TextField
+            className="ms-fontWeight-light theme-label-caption"
+            label="1 (Best)"
+            value={settingValue[0]}
+            onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+              ratingHandler(ev, 0);
+            }}
+          />
+          <TextField
+            className="ms-fontWeight-light theme-label-caption"
+            label="2"
+            value={settingValue[1]}
+            onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+              ratingHandler(ev, 1);
+            }}
+          />
+          <TextField
+            className="ms-fontWeight-light theme-label-caption"
+            label="3"
+            value={settingValue[2]}
+            onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+              ratingHandler(ev, 2);
+            }}
+          />
+          <TextField
+            className="ms-fontWeight-light theme-label-caption"
+            label="4"
+            value={settingValue[3]}
+            onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+              ratingHandler(ev, 3);
+            }}
+          />
+          <TextField
+            className="ms-fontWeight-light theme-label-caption"
+            label="5 (Worst)"
+            value={settingValue[4]}
+            onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+              ratingHandler(ev, 4);
+            }}
+          />
         </div>
       );
     };
@@ -125,9 +211,12 @@ class SettingsPane extends React.Component<AppProps, AppState> {
     });
 
     const onRenderLanguageCurrentChoice = () => {
+      const { unsaveThemeMO } = this.state;
+
       return (
         <div className="currentscores  ms-font-s ms-fontWeight-bold">
-          <p>Current: Learn - Fit & Trim - Needs Toning - Flabby - Heart Attack!</p>
+          <p>{`${unsaveThemeMO.ratings[0]} - ${unsaveThemeMO.ratings[1]} - ${unsaveThemeMO.ratings[2]} - ${unsaveThemeMO.ratings[3]} - ${unsaveThemeMO.ratings[4]}`}</p>
+          {/* <p>Current: Learn - Fit & Trim - Needs Toning - Flabby - Heart Attack!</p> */}
         </div>
       );
     };
@@ -138,8 +227,8 @@ class SettingsPane extends React.Component<AppProps, AppState> {
         <ChoiceGroup
           options={options}
           onChange={_onChange}
+          selectedKey={this.state.unsaveThemeMO.key}
           // selectedKey={unsavedSettings.scoreLanguagePreset}
-          // label="Learn - Fit & Trim - Needs Toning - Flabby - Heart Attack!"
           required={true}
         />
         {this.state.isShowCustomTheme === true ? onRenderCustomTheme() : null}
@@ -227,18 +316,17 @@ class SettingsPane extends React.Component<AppProps, AppState> {
 
     return (
       <div>
-        {console.log("-------------------------------renderExclusionTab")}
         <br />
         <p className="ms-fontWeight-light ms-font-s">Types of text to be excluded from test results.</p>
         <Stack tokens={stackTokens}>
-          {this.renderCheckbox("parens", "Text within parentheses")}
-          {this.renderCheckbox("singleQuotes", "Text within single quotes")}
-          {this.renderCheckbox("doubleQuotes", "Text within double quotes")}
+          {this.renderExclusionsCheckbox("parens", "Text within parentheses")}
+          {this.renderExclusionsCheckbox("singleQuotes", "Text within single quotes")}
+          {this.renderExclusionsCheckbox("doubleQuotes", "Text within double quotes")}
           <br />
-          {this.renderCheckbox("headings", "Text styled as a heading")}
-          {this.renderCheckbox("indentedParagraphs", "Indented paragraphs")}
-          {this.renderCheckbox("listItems", "Text within lists")}
-          {this.renderCheckbox("tables", "Text within tables")}
+          {this.renderExclusionsCheckbox("headings", "Text styled as a heading")}
+          {this.renderExclusionsCheckbox("indentedParagraphs", "Indented paragraphs")}
+          {this.renderExclusionsCheckbox("listItems", "Text within lists")}
+          {this.renderExclusionsCheckbox("tables", "Text within tables")}
         </Stack>
         <br />
         {/* <p>Paragraphs with a word count less than:</p> */}
@@ -270,19 +358,28 @@ class SettingsPane extends React.Component<AppProps, AppState> {
   };
 
   cancelButtonHandler = () => {
-    const { setHideSettingsPane, exclusionsMO } = this.props;
-    this.setState({
-      unsaveExclusionsMO: exclusionsMO
-    });
+    const { setHideSettingsPane, exclusionsMO, themeMO } = this.props;
 
-    console.log(exclusionsMO, this.state.unsaveExclusionsMO);
+    // console.log(themeMO, this.state.unsaveExclusionsMO);
+    // console.log(exclusionsMO, this.state.unsaveExclusionsMO);
+    this.setState({
+      unsaveExclusionsMO: exclusionsMO,
+      unsaveThemeMO: themeMO,
+      isShowCustomTheme: themeMO.key === this.CUSTOM_KEY
+    });
 
     setHideSettingsPane();
   };
 
   saveButtonHandler = () => {
-    const { setHideSettingsPane, setExclusionsMO } = this.props;
+    const { setHideSettingsPane, setExclusionsMO, setThemeMO } = this.props;
     setExclusionsMO(this.state.unsaveExclusionsMO);
+    setThemeMO(this.state.unsaveThemeMO);
+
+    // store to storage
+    LocalStorageManager.setThemeMOToLocalStorage(this.state.unsaveThemeMO);
+    LocalStorageManager.setExclusionsMOToLocalStorage(this.state.unsaveExclusionsMO);
+
     setHideSettingsPane();
   };
 
@@ -345,12 +442,19 @@ const mapDispatchToProps = dispatch => ({
       type: types.SET_EXCLUSIONS,
       exclusionsMO: exclusionsMO
     });
+  },
+  setThemeMO: themeMO => {
+    dispatch({
+      type: types.SET_THEME,
+      themeMO: themeMO
+    });
   }
 });
 
-const mapStateToProps = ({ isShowSettingsPane, exclusionsMO }) => ({
+const mapStateToProps = ({ isShowSettingsPane, exclusionsMO, themeMO }) => ({
   isShowSettingsPane,
-  exclusionsMO
+  exclusionsMO,
+  themeMO
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsPane);
