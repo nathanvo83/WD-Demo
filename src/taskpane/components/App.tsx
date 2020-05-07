@@ -19,6 +19,9 @@ import FirstRun from "./FirstRun/FirstRun";
 import Diagnosis from "./Diagnosis/Diagnosis";
 import SettingsPane from "./SettingsPane/SettingsPane";
 import { ExclusionsMO } from "../models/ExclusionsMO";
+import { ThemeMO } from "../models/ThemeMO";
+import { ConfigManager } from "../Utils/ConfigManager";
+import { LocalStorageManager } from "../Utils/LocalStorageManager";
 
 // import { Checkbox } from "office-ui-fabric-react";
 // import { ScrollablePane, ScrollbarVisibility } from "office-ui-fabric-react";
@@ -41,6 +44,9 @@ export interface AppProps {
   exclusionsMO: ExclusionsMO;
   setExclusionsMO;
 
+  themeMO: ThemeMO;
+  setThemeMO;
+
   isShowInfoPane: boolean;
   isShowIntro: boolean;
   isShowSettingsPane: boolean;
@@ -60,15 +66,18 @@ class App extends React.Component<AppProps, AppState> {
 
   constructor(props, context) {
     super(props, context);
-    console.log("App--------load");
+    console.log("App-------++load");
 
     this.analysis = new Analysis();
     this.chunkDetailsContentChange = false;
     // this.isProcessing = false;
     this.isNextProcessing = false;
 
-    let exclusionsMO = new ExclusionsMO(true, false, true, true, true, true, true, 100, []);
-    this.props.setExclusionsMO(exclusionsMO);
+    let _exclusionsMO = LocalStorageManager.getExclusionsMOFromLocalStorage() || ConfigManager.getDefaultExclusions();
+    this.props.setExclusionsMO(_exclusionsMO);
+
+    let _themeMO = LocalStorageManager.getThemeMOFromLocalStorage() || ConfigManager.getDefaultTheme();
+    this.props.setThemeMO(_themeMO);
   }
 
   componentDidMount() {
@@ -405,6 +414,12 @@ const mapDispatchToProps = dispatch => ({
       type: types.SET_EXCLUSIONS,
       exclusionsMO: exclusionsMO
     });
+  },
+  setThemeMO: themeMO => {
+    dispatch({
+      type: types.SET_THEME,
+      themeMO: themeMO
+    });
   }
 });
 
@@ -413,6 +428,7 @@ const mapStateToProps = ({
   chunkListMO,
   wordTypeScoreMO,
   exclusionsMO,
+  themeMO,
   isShowInfoPane,
   isShowIntro,
   isShowSettingsPane
@@ -421,6 +437,7 @@ const mapStateToProps = ({
   chunkListMO,
   wordTypeScoreMO,
   exclusionsMO,
+  themeMO,
   isShowInfoPane,
   isShowIntro,
   isShowSettingsPane
