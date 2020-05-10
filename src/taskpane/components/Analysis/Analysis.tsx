@@ -293,11 +293,21 @@ export class Analysis {
     // Calculate floating score based on rating
     let score: number = 0;
 
-    if (rating > 0) {
-      score = rating + (rate - scoreCutoffs[rating - 1]) / (scoreCutoffs[rating] - scoreCutoffs[rating - 1]);
-    } else if (rating == 0) {
+    // FIXING BUGS: idx out of scoreCutoffs range
+    if (rating <= 0) {
       score = rating + rate / scoreCutoffs[rating];
+    } else if (0 < rating && rating < scoreCutoffs.length) {
+      score = rating + (rate - scoreCutoffs[rating - 1]) / (scoreCutoffs[rating] - scoreCutoffs[rating - 1]);
+    } else if (scoreCutoffs.length <= rating) {
+      score = rating + rate / scoreCutoffs[rating - 1];
     }
+
+    // ORIGINAL
+    // if (rating > 0 && rating < scoreCutoffs.length) {
+    //   score = rating + (rate - scoreCutoffs[rating - 1]) / (scoreCutoffs[rating] - scoreCutoffs[rating - 1]);
+    // } else if (rating == 0) {
+    //   score = rating + rate / scoreCutoffs[rating];
+    // }
 
     const scoreContribution = scoreContributionWeight[rating];
 
