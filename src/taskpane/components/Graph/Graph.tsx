@@ -2,14 +2,11 @@ import * as React from "react";
 import { connect } from "react-redux";
 import "./Graph.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGrinHearts } from "@fortawesome/free-regular-svg-icons";
-import { faSmileBeam } from "@fortawesome/free-regular-svg-icons";
-import { faMeh } from "@fortawesome/free-regular-svg-icons";
-import { faFrown } from "@fortawesome/free-regular-svg-icons";
-import { faSadCry } from "@fortawesome/free-regular-svg-icons";
+import { faGrinHearts, faSmileBeam, faMeh, faFrown, faSadCry } from "@fortawesome/free-regular-svg-icons";
 import GraphPart from "./GraphPart";
-import { Config } from "../../constants/config";
 import { WordTypeScoreMO } from "../../models/WordTypeScoreMO";
+import { ConfigManager } from "../../Utils/ConfigManager";
+import { types } from "../../constants/types";
 
 export interface AppProps {
   //
@@ -59,35 +56,41 @@ class Graph extends React.Component<AppProps, AppState> {
       </div>
     );
     const { wordTypeScoreMO } = this.props;
+    const metrics = ConfigManager.getMetrics();
     const graph = (
       <div className={"graph-container"}>
         {theSections}
         {theLines}
         {theEmojis}
         <GraphPart
-          label={Config.metrics.Verbs.label}
+          label={metrics.Verbs.label}
           score={wordTypeScoreMO.verbScore}
-          color={Config.metrics.Verbs.color}
+          color={metrics.Verbs.color}
+          type={types.CHECK_VERB}
         ></GraphPart>
         <GraphPart
-          label={Config.metrics.Nouns.label}
+          label={metrics.Nouns.label}
           score={wordTypeScoreMO.nounScore}
-          color={Config.metrics.Nouns.color}
+          color={metrics.Nouns.color}
+          type={types.CHECK_NOUN}
         ></GraphPart>
         <GraphPart
-          label={Config.metrics.Prepositions.label}
+          label={metrics.Prepositions.label}
           score={wordTypeScoreMO.prepScore}
-          color={Config.metrics.Prepositions.color}
+          color={metrics.Prepositions.color}
+          type={types.CHECK_PREP}
         ></GraphPart>
         <GraphPart
-          label={Config.metrics.AdjectivesAdverbs.label}
+          label={metrics.AdjectivesAdverbs.label}
           score={wordTypeScoreMO.ad_Score}
-          color={Config.metrics.AdjectivesAdverbs.color}
+          color={metrics.AdjectivesAdverbs.color}
+          type={types.CHECK_AD_}
         ></GraphPart>
         <GraphPart
-          label={Config.metrics.WasteWords.label}
+          label={metrics.WasteWords.label}
           score={wordTypeScoreMO.wasteScore}
-          color={Config.metrics.WasteWords.color}
+          color={metrics.WasteWords.color}
+          type={types.CHECK_WASTE}
         ></GraphPart>
       </div>
     );
