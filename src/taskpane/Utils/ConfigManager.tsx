@@ -42,4 +42,26 @@ export class ConfigManager {
   static getRatingLabelPresets = () => {
     return Config.ratingLabelPresets;
   };
+
+  static getPunctuation = () => {
+    return Config.punctuation;
+  };
+
+  static getMetrics = () => {
+    return Config.metrics;
+  };
+
+  static getChunkLength = () => {
+    return Config.chunkLength;
+  };
+
+  static getNodePerProcess = () => {
+    return Config.nodePerProcess;
+  };
+
+  static getDelayPerProcess = () => {
+    return Config.delayPerProcess;
+  };
+
+  // static getThemeRating = (key: string, rate: number) => {};
 }
