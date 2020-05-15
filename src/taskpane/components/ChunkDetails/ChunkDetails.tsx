@@ -7,6 +7,8 @@ import { ChunkDetailsMO } from "../../models/ChunkDetailsMO";
 import "./ChunkDetails.css";
 import { Analysis } from "../Analysis/Analysis";
 import { ChunkListMO } from "../../models/ChunkListMO";
+import { WordManager } from "../../Utils/WordManager";
+import { GraphCheckListMO } from "../../models/GraphCheckListMO";
 
 export interface AppProps {
   //
@@ -14,6 +16,7 @@ export interface AppProps {
   setChunkDetailsMO;
   setWordTypeScoreMO;
   chunkListMO: ChunkListMO;
+  graphCheckListMO: GraphCheckListMO;
 }
 
 export interface AppState {
@@ -36,7 +39,46 @@ class ChunkDetails extends React.Component<AppProps, AppState> {
     setWordTypeScoreMO(chunkListMO.wordTypeScore);
   };
 
+  private addWord(listWord: JSX.Element[], word: string, key: string, className: string = "normal") {
+    let { term, ext } = WordManager.seperateWord(word);
+
+    listWord.push(
+      <span key={key} className={className}>
+        {term}
+      </span>
+    );
+
+    if (ext !== "") {
+      listWord.push(
+        <span key={"_" + key} className="normal">
+          {ext + " "}
+        </span>
+      );
+    } else {
+      listWord.push(
+        <span key={"_" + key} className="normal">
+          {" "}
+        </span>
+      );
+    }
+  }
+
+  private combineGraphCheckList() {
+    const { graphCheckListMO } = this.props;
+    if (
+      graphCheckListMO.cVerb === false &&
+      graphCheckListMO.cNoun === false &&
+      graphCheckListMO.cPrep === false &&
+      graphCheckListMO.cWaste === false &&
+      graphCheckListMO.cAd_ === false
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   private changeColor(content: string) {
+    const { graphCheckListMO } = this.props;
     let analysis: Analysis = new Analysis();
     let listItems: JSX.Element[] = [];
     let i: number = 0;
@@ -47,58 +89,46 @@ class ChunkDetails extends React.Component<AppProps, AppState> {
 
       switch (analysis.identifyWord(term)) {
         case 0:
-          listItems.push(
-            <span key={"v" + i} className="verb">
-              {word}
-            </span>
-          );
-          listItems.push(<span key={"e" + i}> </span>);
+          if (graphCheckListMO.cVerb === true || this.combineGraphCheckList() === true) {
+            this.addWord(listItems, word, "v" + i, "verb");
+          } else {
+            this.addWord(listItems, word, "v" + i, "normal");
+          }
           break;
         case 1:
-          listItems.push(
-            <span key={"n" + i} className="noun">
-              {word}
-            </span>
-          );
-          listItems.push(<span key={"e" + i}> </span>);
+          if (graphCheckListMO.cNoun === true || this.combineGraphCheckList() === true) {
+            this.addWord(listItems, word, "n" + i, "noun");
+          } else {
+            this.addWord(listItems, word, "n" + i, "normal");
+          }
           break;
         case 2:
-          listItems.push(
-            <span key={"p" + i} className="preposition">
-              {word}
-            </span>
-          );
-          listItems.push(<span key={"e" + i}> </span>);
+          if (graphCheckListMO.cPrep === true || this.combineGraphCheckList() === true) {
+            this.addWord(listItems, word, "p" + i, "preposition");
+          } else {
+            this.addWord(listItems, word, "p" + i, "normal");
+          }
           break;
         case 3:
-          listItems.push(
-            <span key={"a" + i} className="ad_">
-              {word}
-            </span>
-          );
-          listItems.push(<span key={"e" + i}> </span>);
+          if (graphCheckListMO.cAd_ === true || this.combineGraphCheckList() === true) {
+            this.addWord(listItems, word, "a" + i, "ad_");
+          } else {
+            this.addWord(listItems, word, "a" + i, "normal");
+          }
           break;
         case 4:
-          listItems.push(
-            <span key={"w" + i} className="waste">
-              {word}
-            </span>
-          );
-          listItems.push(<span key={"e" + i}> </span>);
+          if (graphCheckListMO.cWaste === true || this.combineGraphCheckList() === true) {
+            this.addWord(listItems, word, "w" + i, "waste");
+          } else {
+            this.addWord(listItems, word, "w" + i, "normal");
+          }
           break;
-
         default:
-          listItems.push(
-            <span key={"n" + i} className="normal">
-              {word}
-            </span>
-          );
-          listItems.push(<span key={"e" + i}> </span>);
+          this.addWord(listItems, word, "p" + i, "normal");
           break;
       }
     });
 
-    console.log("--->changeColor:", listItems);
     return listItems;
   }
 
@@ -113,14 +143,14 @@ class ChunkDetails extends React.Component<AppProps, AppState> {
         let y = this.changeColor(x);
         listItems.push(<div key={start}>{y}</div>);
         start = i + 1;
-
-        console.log("--->renderContent:", listItems);
       }
     }
 
     if (start < content.length - 1) {
       // listItems.push(<div>{content.substring(start + 1)}</div>);
-      start++;
+      if (start > 0) {
+        start++;
+      }
       let x = content.substring(start);
       let y = this.changeColor(x);
       listItems.push(<div key={start}>{y}</div>);
@@ -160,6 +190,10 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-const mapStateToProps = ({ chunkDetailsMO, chunkListMO }) => ({ chunkDetailsMO, chunkListMO });
+const mapStateToProps = ({ chunkDetailsMO, chunkListMO, graphCheckListMO }) => ({
+  chunkDetailsMO,
+  chunkListMO,
+  graphCheckListMO
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChunkDetails);
