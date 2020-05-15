@@ -59,7 +59,7 @@ class ChunkList extends React.Component<AppProps, AppState> {
     while (temp !== null) {
       listItems.push(
         <div key={temp.index} onClick={this.chunkHandler.bind(this, temp)}>
-          <Chunk title={(temp.isUpdated === false ? "o - " : "x - ") + temp.index + ". " + temp.data.title}></Chunk>
+          <Chunk isUpdated={temp.isUpdated} chunkDataMO={temp.data}></Chunk>
         </div>
       );
       temp = temp.next;
