@@ -7,3 +7,12 @@
   margin: 5px 0px;
   cursor: pointer;
 }
+
+.chunk-pending {
+  border-left: 5px solid orangered;
+}
+
+.chunk-updated {
+  border-left: none;
+  /* border-left: 5px solid olivedrab; */
+}
