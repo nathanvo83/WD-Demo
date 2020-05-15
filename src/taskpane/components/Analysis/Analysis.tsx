@@ -3,8 +3,10 @@ import { ChunkDataMO } from "../../models/ChunkDataMO";
 import { wordData } from "../../database/wordData";
 import { WordTypeCountMO } from "../../models/WordTypeCountMO";
 import { ChunkNodeMO } from "../../models/ChunkNodeMO";
-import { Config } from "../../constants/config";
+// import { Config } from "../../constants/config";
 import { WordTypeScoreMO } from "../../models/WordTypeScoreMO";
+import { ConfigManager } from "../../Utils/ConfigManager";
+import { WordManager } from "../../Utils/WordManager";
 
 export enum Metrics {
   Overall,
@@ -27,17 +29,17 @@ export class Analysis {
     let title = this.getChunkTitle(content);
 
     chunkDataMO = new ChunkDataMO(title, content);
-
     return chunkDataMO;
   }
 
   private getChunkTitle(content: string) {
     let temp = content.trim();
-    let paragraph = temp.substring(0, temp.indexOf("\r", 0));
+    let _x = temp.indexOf("\r", 0);
+    let paragraph = temp.substring(0, _x !== -1 ? _x : temp.length);
 
-    let end = paragraph.indexOf(" ", 30) === -1 ? paragraph.length : paragraph.indexOf(" ", 30);
+    let end = paragraph.indexOf(" ", 20) === -1 ? paragraph.length : paragraph.indexOf(" ", 20);
 
-    return paragraph.substring(0, end) + " ...";
+    return paragraph.substring(0, end) + "...";
   }
 
   isTextChange(text: string) {
@@ -128,6 +130,18 @@ export class Analysis {
     return result;
   }
 
+  public cleanWord(word: string) {
+    let punctuation = ConfigManager.getPunctuation();
+    let term = word.trim();
+    let i = term.length - 1;
+
+    while (i > 0 && punctuation.indexOf(term[i]) !== -1) {
+      i--;
+    }
+
+    return term.slice(0, i + 1);
+  }
+
   // -1: normal
   // 0: verbs
   // 1:nouns
@@ -135,15 +149,18 @@ export class Analysis {
   // 3:ad_s
   // 4:waste
   public identifyWord(word: string) {
-    if (this.identifVerbs(word) === true) {
+    let _word = this.cleanWord(word);
+    // console.log("~~~~~~~ => identifyWord:", _word);
+
+    if (this.identifVerbs(_word) === true) {
       return 0;
-    } else if (this.identifyNouns(word) === true) {
+    } else if (this.identifyNouns(_word) === true) {
       return 1;
-    } else if (this.identifyPrepositions(word) === true) {
+    } else if (this.identifyPrepositions(_word) === true) {
       return 2;
-    } else if (this.identifyAd_s(word) === true) {
+    } else if (this.identifyAd_s(_word) === true) {
       return 3;
-    } else if (this.identifyWastes(word) === true) {
+    } else if (this.identifyWastes(_word) === true) {
       return 4;
     }
     return -1;
@@ -159,8 +176,9 @@ export class Analysis {
 
     if (content) {
       content.split(" ").forEach(word => {
+        // console.log("~~~~~~~word:", word);
         if (word.trim().length > 0) {
-          let term = word.toLowerCase();
+          let term = this.cleanWord(word.toLowerCase());
 
           wc++;
 
@@ -189,7 +207,7 @@ export class Analysis {
     }
 
     let wtc = new WordTypeCountMO(_verb, _noun, _prep, _waste, _ad_);
-    wc--;
+    // wc--;
 
     return { wtc, wc };
   }
@@ -319,83 +337,91 @@ export class Analysis {
   }
 
   private calculateChunkNodeScores(chunkNodeMO: ChunkNodeMO) {
+    let metrics = ConfigManager.getMetrics();
     let score: WordTypeScoreMO = new WordTypeScoreMO();
 
     // verbs
     score.verbScore = this.calculateScore(
       chunkNodeMO.data.wordTypeCount.verb,
       chunkNodeMO.data.contentWordCount,
-      Config.metrics.Verbs.scoreCutoffs
+      metrics.Verbs.scoreCutoffs
     ).score;
 
     // nouns
     score.nounScore = this.calculateScore(
       chunkNodeMO.data.wordTypeCount.noun,
       chunkNodeMO.data.contentWordCount,
-      Config.metrics.Nouns.scoreCutoffs
+      metrics.Nouns.scoreCutoffs
     ).score;
 
     // prep
     score.prepScore = this.calculateScore(
       chunkNodeMO.data.wordTypeCount.prep,
       chunkNodeMO.data.contentWordCount,
-      Config.metrics.Prepositions.scoreCutoffs
+      metrics.Prepositions.scoreCutoffs
     ).score;
 
     // ad_word
     score.ad_Score = this.calculateScore(
       chunkNodeMO.data.wordTypeCount.ad_,
       chunkNodeMO.data.contentWordCount,
-      Config.metrics.AdjectivesAdverbs.scoreCutoffs
+      metrics.AdjectivesAdverbs.scoreCutoffs
     ).score;
 
     // waste
     score.wasteScore = this.calculateScore(
       chunkNodeMO.data.wordTypeCount.waste,
       chunkNodeMO.data.contentWordCount,
-      Config.metrics.WasteWords.scoreCutoffs
+      metrics.WasteWords.scoreCutoffs
     ).score;
+
+    // average
+    score.average = WordManager.calculateAverage(score);
 
     return score;
   }
 
   private calculateChunkListScores(chunkListMO: ChunkListMO) {
+    let metrics = ConfigManager.getMetrics();
     let score: WordTypeScoreMO = new WordTypeScoreMO();
 
     // verbs
     score.verbScore = this.calculateScore(
       chunkListMO.wordTypeCount.verb,
       chunkListMO.contentWordCount,
-      Config.metrics.Verbs.scoreCutoffs
+      metrics.Verbs.scoreCutoffs
     ).score;
 
     // nouns
     score.nounScore = this.calculateScore(
       chunkListMO.wordTypeCount.noun,
       chunkListMO.contentWordCount,
-      Config.metrics.Nouns.scoreCutoffs
+      metrics.Nouns.scoreCutoffs
     ).score;
 
     // prep
     score.prepScore = this.calculateScore(
       chunkListMO.wordTypeCount.prep,
       chunkListMO.contentWordCount,
-      Config.metrics.Prepositions.scoreCutoffs
+      metrics.Prepositions.scoreCutoffs
     ).score;
 
     // ad_word
     score.ad_Score = this.calculateScore(
       chunkListMO.wordTypeCount.ad_,
       chunkListMO.contentWordCount,
-      Config.metrics.AdjectivesAdverbs.scoreCutoffs
+      metrics.AdjectivesAdverbs.scoreCutoffs
     ).score;
 
     // waste
     score.wasteScore = this.calculateScore(
       chunkListMO.wordTypeCount.waste,
       chunkListMO.contentWordCount,
-      Config.metrics.WasteWords.scoreCutoffs
+      metrics.WasteWords.scoreCutoffs
     ).score;
+
+    // average
+    score.average = WordManager.calculateAverage(score);
 
     return score;
   }
@@ -405,8 +431,11 @@ export class Analysis {
     let i: number = 0;
 
     while (temp !== null && i <= to) {
-      if (i >= from && i <= to) {
+      if (i >= from && i < to) {
         let { wtc, wc } = this.calculateWord(temp.data.content);
+
+        console.log("~~>> wtc:", wtc);
+
         temp.data.wordTypeCount = wtc;
         temp.data.contentWordCount = wc;
         temp.isUpdated = true;
@@ -414,6 +443,8 @@ export class Analysis {
 
         chunkListMO.wordTypeCount.append(wtc);
         chunkListMO.contentWordCount += wc;
+
+        console.log("~~>> wc:", wc, chunkListMO.contentWordCount);
       }
 
       temp = temp.next;
@@ -429,9 +460,10 @@ export class Analysis {
     let chunkListMO: ChunkListMO = new ChunkListMO();
     let start: number = 0;
     let length: number = 0;
+    let chunkLength = ConfigManager.getChunkLength();
 
     for (let i = 0; i < doc.length; i++) {
-      if (doc[i] === "\r" && i - start >= 5000) {
+      if (doc[i] === "\r" && i - start >= chunkLength) {
         let content = doc.substring(start, i);
         chunkListMO.addLast(this.createChunkDataMO(content));
         //
@@ -448,13 +480,7 @@ export class Analysis {
 
     chunkListMO.length = length;
 
-    console.log("analysis chunkListMO: ", chunkListMO);
-
     return chunkListMO;
-  }
-
-  public test(msg: string) {
-    console.log(msg);
   }
 
   public countWord(str, schar) {
