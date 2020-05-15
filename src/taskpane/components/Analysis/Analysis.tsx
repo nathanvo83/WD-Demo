@@ -434,8 +434,6 @@ export class Analysis {
       if (i >= from && i < to) {
         let { wtc, wc } = this.calculateWord(temp.data.content);
 
-        console.log("~~>> wtc:", wtc);
-
         temp.data.wordTypeCount = wtc;
         temp.data.contentWordCount = wc;
         temp.isUpdated = true;
@@ -443,8 +441,6 @@ export class Analysis {
 
         chunkListMO.wordTypeCount.append(wtc);
         chunkListMO.contentWordCount += wc;
-
-        console.log("~~>> wc:", wc, chunkListMO.contentWordCount);
       }
 
       temp = temp.next;
