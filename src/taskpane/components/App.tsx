@@ -22,6 +22,7 @@ import { ExclusionsMO } from "../models/ExclusionsMO";
 import { ThemeMO } from "../models/ThemeMO";
 import { ConfigManager } from "../Utils/ConfigManager";
 import { LocalStorageManager } from "../Utils/LocalStorageManager";
+import { GraphCheckListMO } from "../models/GraphCheckListMO";
 
 // import { Checkbox } from "office-ui-fabric-react";
 // import { ScrollablePane, ScrollbarVisibility } from "office-ui-fabric-react";
@@ -46,6 +47,8 @@ export interface AppProps {
 
   themeMO: ThemeMO;
   setThemeMO;
+
+  setGraphCheckListMO;
 
   isShowInfoPane: boolean;
   isShowIntro: boolean;
@@ -72,6 +75,9 @@ class App extends React.Component<AppProps, AppState> {
     this.chunkDetailsContentChange = false;
     // this.isProcessing = false;
     this.isNextProcessing = false;
+
+    let _graphCheckListMO = new GraphCheckListMO();
+    this.props.setGraphCheckListMO(_graphCheckListMO);
 
     let _exclusionsMO = LocalStorageManager.getExclusionsMOFromLocalStorage() || ConfigManager.getDefaultExclusions();
     this.props.setExclusionsMO(_exclusionsMO);
@@ -126,7 +132,6 @@ class App extends React.Component<AppProps, AppState> {
     await context.sync();
 
     let result = this.analysis.split(body.text);
-
     return result;
   };
 
@@ -191,26 +196,35 @@ class App extends React.Component<AppProps, AppState> {
 
   countWordChunkList = async () => {
     const { chunkListMO, setChunkListMO, setWordTypeScoreMO } = this.props;
-    let x = 10;
 
-    let max = Math.ceil(chunkListMO.length / x);
+    // process each 10 node
+    let nodePerProcess = ConfigManager.getNodePerProcess();
+    let delayPerProcess = ConfigManager.getDelayPerProcess();
+
+    let max = Math.ceil(chunkListMO.length / nodePerProcess);
     chunkListMO.wordTypeCount.reset();
     chunkListMO.wordTypeScore.reset();
+    // //-----reset wc
+    chunkListMO.contentWordCount = 0;
+    // // chunkListMO.resetWordCount();
+    // chunkListMO.reset();
 
     // setWordTypeScoreMO(new WordTypeScoreMO());
     // Timer.sleep(500);
 
     let temp: ChunkListMO = new ChunkListMO();
     for (let i = 0; i < max; i++) {
-      await Timer.sleep(100);
-      temp = this.analysis.calculator(chunkListMO, i * x, (i + 1) * x);
+      await Timer.sleep(delayPerProcess);
+      temp = this.analysis.calculator(chunkListMO, i * nodePerProcess, (i + 1) * nodePerProcess);
       // setWordTypeScoreMO(temp.wordTypeScore, async () => {
       //   await Timer.sleep(100);
       //   setChunkListMO(temp);
       // });
 
       setChunkListMO(temp);
-      this.setState({ statusInfo: `(${Math.min((i + 1) * x, chunkListMO.length)}/${chunkListMO.length})` });
+      this.setState({
+        statusInfo: `(${Math.min((i + 1) * nodePerProcess, chunkListMO.length)}/${chunkListMO.length})`
+      });
     }
 
     setWordTypeScoreMO(temp.wordTypeScore);
@@ -270,6 +284,7 @@ class App extends React.Component<AppProps, AppState> {
 
   renderMaster() {
     // const { chunkListMO } = this.props;
+
     return (
       <div>
         {/* <div>wc: {chunkListMO.contentWordCount}</div>
@@ -284,6 +299,7 @@ class App extends React.Component<AppProps, AppState> {
         <div>prep: {chunkListMO.wordTypeScore.prepScore}</div>
         <div>waste: {chunkListMO.wordTypeScore.wasteScore}</div>
         <div>ad_: {chunkListMO.wordTypeScore.ad_Score}</div> */}
+        {/* <div>---{chunkListMO.wordTypeScore}</div> */}
         <ChunkList></ChunkList>
       </div>
     );
@@ -370,7 +386,8 @@ class App extends React.Component<AppProps, AppState> {
           <Diagnosis></Diagnosis>
         </div>
         <div className="app-content">
-          {chunkDetailsMO.isShow === false ? <ChunkList></ChunkList> : <ChunkDetails></ChunkDetails>}
+          {/* {chunkDetailsMO.isShow === false ? <ChunkList></ChunkList> : <ChunkDetails></ChunkDetails>} */}
+          {chunkDetailsMO.isShow === false ? this.renderMaster() : this.renderDetails()}
         </div>
       </div>
     );
@@ -380,7 +397,7 @@ class App extends React.Component<AppProps, AppState> {
     const { isShowIntro } = this.props;
     return <div>{isShowIntro === true ? this.renderFirstRun() : this.renderAppLayout()}</div>;
 
-    return this.renderAppLayout();
+    // return this.renderAppLayout();
     // return <div>{isShowFirstRun === false ? this.renderFirstRun() : this.renderAppLayout()}</div>;
     // return <div>{isShowFirstRun === false ? this.renderAppLayout() : this.renderFirstRun()}</div>;
 
@@ -419,6 +436,12 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: types.SET_THEME,
       themeMO: themeMO
+    });
+  },
+  setGraphCheckListMO: graphCheckListMO => {
+    dispatch({
+      type: types.SET_GRAPH_CHECK_LIST,
+      graphCheckListMO: graphCheckListMO
     });
   }
 });
