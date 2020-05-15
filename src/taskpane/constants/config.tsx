@@ -14,6 +14,9 @@ export const Config = {
     //     }
   },
 
+  punctuation: `’'[](){}⟨⟩:,،、‒–—―…......⋯᠁ฯ!.‹›«»‐-?‘’“”''"";/⧸⁄·  &*@\‱•^†‡⹋°”〃=¡¿※×#№÷ºª%‰¶+−±∓′″‴§~_|‖¦©🄯℗®℠™¤⁂❧☞‽⸮◊`,
+  // punctuation: ",.",
+
   metrics: {
     Overall: {
       key: "Overall",
@@ -199,5 +202,9 @@ export const Config = {
     customExclusion: []
   },
 
-  themeDefault: "diet-fitness"
+  themeDefault: "diet-fitness",
+
+  chunkLength: 5000,
+  nodePerProcess: 3,
+  delayPerProcess: 100
 };
