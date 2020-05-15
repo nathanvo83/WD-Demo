@@ -8,6 +8,7 @@ import { isShowIntroReducer } from "./isShowIntroReducer";
 import { isShowSettingsPaneReducer } from "./isShowSettingsPaneReducer";
 import { exclusionsMOReducer } from "./exclusionsMOReducer";
 import { themeMOReducer } from "./themeMOReducer";
+import { graphCheckListMOReducer } from "./graphCheckListMOReducer";
 
 export const rootReducer = combineReducers({
   // MO
@@ -16,6 +17,8 @@ export const rootReducer = combineReducers({
   wordTypeScoreMO: wordTypeScoreMOReducer,
   exclusionsMO: exclusionsMOReducer,
   themeMO: themeMOReducer,
+  graphCheckListMO: graphCheckListMOReducer,
+
   // TRUE - FALSE
   isShowInfoPane: isShowInfoPaneReducer,
   isShowFirstRun: isShowFirstRunReducer,
