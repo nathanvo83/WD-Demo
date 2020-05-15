@@ -58,7 +58,8 @@
         #f3f3ee 10px,
         #f3f3ee 20px
     );*/
-  background-image: url(/writers-diet-plugin/assets/graph_bg.png);
+  /* background-image: url(/writers-diet-plugin/assets/graph_bg.png); */
+  background-image: url("../../../../assets/graph_bg.png");
   background-attachment: fixed;
 }
 
