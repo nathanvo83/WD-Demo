@@ -4,13 +4,15 @@ export class WordTypeScoreMO {
   public prepScore: number;
   public wasteScore: number;
   public ad_Score: number;
+  public average: number;
 
-  constructor(verbScore = 0, nounScore = 0, prepScore = 0, wasteScore = 0, ad_Score = 0) {
+  constructor(verbScore = 0, nounScore = 0, prepScore = 0, wasteScore = 0, ad_Score = 0, average = 0) {
     this.nounScore = nounScore;
     this.prepScore = prepScore;
     this.verbScore = verbScore;
     this.wasteScore = wasteScore;
     this.ad_Score = ad_Score;
+    this.average = average;
   }
 
   public reset() {
