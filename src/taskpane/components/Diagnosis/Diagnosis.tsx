@@ -5,6 +5,10 @@ import { types } from "../../constants/types";
 import { ChunkDetailsMO } from "../../models/ChunkDetailsMO";
 import { IconButton } from "office-ui-fabric-react";
 import { ChunkListMO } from "../../models/ChunkListMO";
+// import { WordTypeScoreMO } from "../../models/WordTypeScoreMO";
+import { ThemeMO } from "../../models/ThemeMO";
+import { GraphCheckListMO } from "../../models/GraphCheckListMO";
+import { WordManager } from "../../Utils/WordManager";
 
 // import RegionIcon from "../../../assets/regionicon.svg";
 // import DocumentIcon from "../../../assets/documenticon.svg";
@@ -17,8 +21,13 @@ export interface AppProps {
   //
   chunkDetailsMO: ChunkDetailsMO;
   setChunkDetailsMO;
+
   chunkListMO: ChunkListMO;
   setWordTypeScoreMO;
+
+  themeMO: ThemeMO;
+
+  graphCheckListMO: GraphCheckListMO;
 }
 
 export interface AppState {
@@ -32,6 +41,62 @@ class Diagnosis extends React.Component<AppProps, AppState> {
     setChunkDetailsMO(chunkDetailsMO);
     setWordTypeScoreMO(chunkListMO.wordTypeScore);
   };
+
+  getChunkDetailsRating() {
+    //
+    const { chunkDetailsMO, graphCheckListMO } = this.props;
+    let result: number;
+
+    if (graphCheckListMO.cVerb === true) {
+      result = WordManager.verifyScore(chunkDetailsMO.data.wordTypeScore.verbScore);
+    } else if (graphCheckListMO.cNoun === true) {
+      result = WordManager.verifyScore(chunkDetailsMO.data.wordTypeScore.nounScore);
+    } else if (graphCheckListMO.cPrep === true) {
+      result = WordManager.verifyScore(chunkDetailsMO.data.wordTypeScore.prepScore);
+    } else if (graphCheckListMO.cAd_ === true) {
+      result = WordManager.verifyScore(chunkDetailsMO.data.wordTypeScore.ad_Score);
+    } else if (graphCheckListMO.cWaste === true) {
+      result = WordManager.verifyScore(chunkDetailsMO.data.wordTypeScore.wasteScore);
+    } else {
+      result = WordManager.verifyScore(chunkDetailsMO.data.wordTypeScore.average);
+    }
+
+    return result;
+  }
+
+  getChunkListRating() {
+    //
+    const { chunkListMO, graphCheckListMO } = this.props;
+    let result: number;
+
+    if (graphCheckListMO.cVerb === true) {
+      result = WordManager.verifyScore(chunkListMO.wordTypeScore.verbScore);
+    } else if (graphCheckListMO.cNoun === true) {
+      result = WordManager.verifyScore(chunkListMO.wordTypeScore.nounScore);
+    } else if (graphCheckListMO.cPrep === true) {
+      result = WordManager.verifyScore(chunkListMO.wordTypeScore.prepScore);
+    } else if (graphCheckListMO.cAd_ === true) {
+      result = WordManager.verifyScore(chunkListMO.wordTypeScore.ad_Score);
+    } else if (graphCheckListMO.cWaste === true) {
+      result = WordManager.verifyScore(chunkListMO.wordTypeScore.wasteScore);
+    } else {
+      result = WordManager.verifyScore(chunkListMO.wordTypeScore.average);
+    }
+
+    return result;
+  }
+
+  getRating() {
+    const { chunkDetailsMO, themeMO } = this.props;
+
+    let result;
+    result =
+      chunkDetailsMO.isShow === true
+        ? themeMO.ratings[this.getChunkDetailsRating()]
+        : themeMO.ratings[this.getChunkListRating()];
+
+    return result;
+  }
 
   render() {
     const { chunkDetailsMO, chunkListMO } = this.props;
@@ -60,8 +125,17 @@ class Diagnosis extends React.Component<AppProps, AppState> {
             ) : (
               <img src={DocumentIcon} className="diagnosis-icon" width="40px" height="40px"></img>
             )}
+            {this.getRating()}
+
+            {/* {console.log(
+              "~~~>>calculateAverage",
+              WordManager.calculateAverage(chunkDetailsMO.data.wordTypeScore),
+              themeMO.ratings[5]
+            )} */}
+            {/* {chunkDetailsMO.isShow
+              ? themeMO.ratings[chunkDetailsMO.data.wordTypeScore.average]
+              : themeMO.ratings[chunkListMO.wordTypeScore.average]} */}
             {/* <DocumentIcon className="diagnosis-icon" width="40px" height="40px" /> */}
-            FIT & TRIM
           </div>
           <div className={"diagnosis-icon-container"}>
             {chunkDetailsMO.isShow ? (
@@ -98,6 +172,11 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-const mapStateToProps = ({ chunkDetailsMO, chunkListMO }) => ({ chunkDetailsMO, chunkListMO });
+const mapStateToProps = ({ chunkDetailsMO, chunkListMO, themeMO, graphCheckListMO }) => ({
+  chunkDetailsMO,
+  chunkListMO,
+  themeMO,
+  graphCheckListMO
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Diagnosis);
